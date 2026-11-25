@@ -1,0 +1,6 @@
+---
+interface Props { lines: { text: string; style: 'plain' | 'orange' | 'blue' }[]; tag?: 'h1' | 'h2' }
+const { lines, tag: Tag = 'h1' } = Astro.props;
+const cls = { plain: 'p', orange: 'o', blue: 'b' } as const;
+---
+<Tag>{lines.map((l) => <span class={cls[l.style]}>{l.text}</span>)}</Tag>

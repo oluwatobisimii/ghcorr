@@ -1,0 +1,20 @@
+---
+import { eventUrl, type ChurchEvent } from '../lib/content';
+interface Props { event: ChurchEvent; past?: boolean }
+const { event: e, past = false } = Astro.props;
+const href = eventUrl(e);
+const Tag = href ? 'a' : 'div';
+const ext = href && /^https?:/.test(href) ? { target: '_blank', rel: 'noopener' } : {};
+---
+<Tag class="e-card" href={href} {...ext}>
+  <div class="bn">
+    {e.data.banner ? <img src={e.data.banner} alt="" loading="lazy"> : <div class="txt"><b>{e.data.title}</b></div>}
+    {past && e.data.page && <span class="badge">Recap</span>}
+    {!past && e.data.featured && <span class="badge">Featured</span>}
+  </div>
+  <div class="body">
+    <span class="k">{e.data.when}</span>
+    <h3>{e.data.title}</h3>
+    <p>{e.data.venue}</p>
+  </div>
+</Tag>

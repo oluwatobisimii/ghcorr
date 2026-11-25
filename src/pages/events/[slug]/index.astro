@@ -1,0 +1,250 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Footer from '../../../components/Footer.astro';
+import TitleLines from '../../../components/TitleLines.astro';
+import Btn from '../../../components/Btn.astro';
+import Icon from '../../../components/Icon.astro';
+import { getEvents, type ChurchEvent } from '../../../lib/content';
+import { endOf, isOver } from '../../../lib/time';
+import { settings, mapsUrl, mapsEmbed } from '../../../lib/settings';
+import { highlightStars } from '../../../lib/text';
+import { youtubeId, youtubeThumb } from '../../../lib/youtube';
+import type { NavLink } from '../../../lib/nav';
+import '../../../styles/event.css';
+import '../../../styles/pages.css';
+
+export async function getStaticPaths() {
+  const events = (await getEvents()).filter((e) => e.data.page);
+  return events.map((event) => ({ params: { slug: event.id }, props: { event } }));
+}
+interface Props { event: ChurchEvent }
+const { event } = Astro.props;
+const d = event.data;
+const id = event.id;
+
+// "Live" parts hide and "recap" parts appear once the event ends.
+// The build sets the starting state; the browser corrects it to the minute.
+const overAt = endOf(d).toISOString();
+const over = isOver(d);
+const live = { 'data-hide-after': overAt, hidden: over };
+const after = { 'data-show-after': overAt, hidden: !over };
+
+const recapYt = youtubeId(d.recap?.youtube);
+const hasRecap = !!d.recap && (!!d.recap.text || !!recapYt || d.recap.images.length > 0);
+const calendar = `/events/${id}/calendar.ics`;
+
+const navLinks: NavLink[] = [
+  { label: 'Home', href: '/' },
+  ...(d.schedule ? [{ label: 'Schedule', href: '#schedule' }] : []),
+  ...(d.ministers.length ? [{ label: 'Ministers', href: '#ministers' }] : []),
+  ...(d.involve.length ? [{ label: 'Get involved', href: '#get-involved', hideAfter: overAt }] : []),
+  ...(d.posters ? [{ label: 'Posters', href: '#posters' }] : []),
+  ...(d.showVenue ? [{ label: 'Venue', href: '#venue' }] : []),
+];
+const primary = d.hero?.buttons.find((b) => /^https?:/.test(b.url));
+const navCta = primary
+  ? { label: primary.label.replace(/^Buy anniversary /, 'Buy '), href: primary.url, hideAfter: primary.hideAfterEvent ? overAt : undefined }
+  : { label: 'Plan your visit', href: '/#visit' };
+const mobileExtra: NavLink[] = d.dp ? [{ label: 'Make your DP', href: 'dp/', hideAfter: overAt }] : [];
+---
+<Base title={`${d.title.split(':')[0]} | GHC Outer Ring Road`} description={d.summary} image={d.shareImage ?? d.banner} sub navLinks={navLinks} navCta={navCta} mobileExtra={mobileExtra} showLive={false}>
+  <!-- HERO -->
+  <section class="a-hero">
+    <div class="wrap">
+      <div>
+        {d.hero?.tagline && <span class="tag">{d.hero.tagline}</span>}
+        {d.hero?.titleLines.length ? <TitleLines lines={d.hero.titleLines} /> : <h1><span class="b">{d.title}</span></h1>}
+        <p class="when">{d.when}{d.hero?.details && <small>{d.hero.details}</small>}</p>
+        {d.hero?.countdown && (
+          <div class="cdown" data-countdown={d.start} aria-label="Countdown" {...live}>
+            <div><span data-d>00</span><small>DAYS</small></div>
+            <div><span data-h>00</span><small>HRS</small></div>
+            <div><span data-m>00</span><small>MINS</small></div>
+            <div><span data-s>00</span><small>SECS</small></div>
+          </div>
+        )}
+        {d.recap?.heading && <p class="when" style="margin:26px 0 30px;color:var(--yellow)" {...after}>{d.recap.heading}</p>}
+        <div class="actions">
+          {d.hero?.buttons.map((b) => <Btn link={b} hideAfter={overAt} />)}
+          <a class="btn btn-o" href={calendar} download {...live}>Add to calendar</a>
+          {hasRecap && <a class="btn btn-y" href="#recap" {...after}>Watch the recap</a>}
+        </div>
+      </div>
+      {(d.hero?.video || d.hero?.image) && (
+        <div class="vid">
+          {d.hero?.video
+            ? <video autoplay muted loop playsinline poster={d.hero.image}><source src={d.hero.video} type="video/mp4"></video>
+            : <img src={d.hero?.image} alt="">}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- RECAP (appears after the event) -->
+  {hasRecap && (
+    <section class="recap" id="recap" {...after}>
+      <div class="wrap">
+        <div class="sec-head">
+          <div><span class="eyebrow">Recap</span><h2 class="h2">{d.recap?.heading ?? 'Thank you for celebrating with us.'}</h2></div>
+          {d.recap?.text && <p class="lead">{d.recap.text}</p>}
+        </div>
+        {recapYt && (
+          <a class="s-video" href={d.recap?.youtube} data-yt={recapYt} aria-label="Play the recap" style="margin-bottom:28px">
+            <img src={youtubeThumb(recapYt)} alt="">
+            <span class="play"><Icon name="play" size={38} /></span>
+          </a>
+        )}
+        {d.recap && d.recap.images.length > 0 && <div class="years">{d.recap.images.map((src) => <img loading="lazy" src={src} alt="">)}</div>}
+      </div>
+    </section>
+  )}
+
+  <!-- THE WORD -->
+  {d.quote && (
+    <section class="word">
+      <div class="wrap">
+        <img class="mark" src="/assets/logomark-colour.svg" alt="">
+        <div>
+          <span class="eyebrow">{d.quote.eyebrow}</span>
+          <blockquote style="margin-top:14px" set:html={`“${highlightStars(d.quote.text)}”`} />
+          {d.quote.cite && <cite>{d.quote.cite}</cite>}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- SCHEDULE -->
+  {d.schedule && (
+    <section id="schedule">
+      <div class="wrap">
+        <div class="sec-head">
+          <div><span class="eyebrow">Schedule</span><h2 class="h2">{d.schedule.heading}</h2></div>
+          {d.schedule.intro && <p class="lead">{d.schedule.intro}</p>}
+        </div>
+        <div class="sched">
+          {d.schedule.items.map((it) => (
+            <article class={`sitem${it.highlight ? ' main' : ''}`}>
+              {it.pill && <span class="pill">{it.pill}</span>}
+              <div class="d"><b>{it.day}</b><span>{it.label}</span></div>
+              <h3>{it.title}</h3>
+              {it.bullets.length > 0 && <ul>{it.bullets.map((b) => <li>{b}</li>)}</ul>}
+              {it.text && <p>{it.text}</p>}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- MINISTERS -->
+  {d.ministers.length > 0 && (
+    <section class="ministers" id="ministers">
+      <div class="wrap">
+        <div class="sec-head"><div><span class="eyebrow" style="color:var(--yellow)">Ministering</span><h2 class="h2">Who you'll hear from</h2></div></div>
+        <div class="mgrid">
+          {d.ministers.map((m) => (
+            <div class="mcard">
+              <img src={m.photo} alt={m.name} style={`object-position:${m.photoPosition}`} loading="lazy">
+              <div class="body"><span class="role">{m.role}</span><h3>{m.name}</h3>{m.text && <p>{m.text}</p>}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- GET INVOLVED (hidden after the event) -->
+  {d.involve.length > 0 && (
+    <section id="get-involved" {...live}>
+      <div class="wrap">
+        <div class="sec-head"><div><span class="eyebrow">Be part of it</span><h2 class="h2">Get involved</h2></div></div>
+        <div class="involve">
+          {d.involve.map((c) => {
+            const kind = { yellow: 'shirt', gradient: 'dp', navy: 'give', light: 'sponsor' }[c.kind];
+            const eyebrowColor = c.kind === 'yellow' ? 'var(--navy)' : c.kind === 'light' ? undefined : 'var(--yellow)';
+            return (
+              <div class={`icard ${kind}`}>
+                {c.eyebrow && <span class="eyebrow" style={eyebrowColor ? `color:${eyebrowColor}` : undefined}>{c.eyebrow}</span>}
+                <h3>{c.title}</h3>
+                {c.text && <p>{c.text}</p>}
+                {c.account && <div class="acct"><div><b>{c.account.number}</b><br><span>{c.account.bank}</span></div><button data-copy={c.account.number}>Copy number</button></div>}
+                {c.buttons.length > 0 && <div class="btns">{c.buttons.map((b) => <Btn link={b} hideAfter={overAt} />)}</div>}
+                {c.image && <img src={c.image} alt="" loading="lazy">}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- POSTERS -->
+  {d.posters && (
+    <section id="posters" style="background:var(--paper)">
+      <div class="wrap">
+        <div class="sec-head">
+          <div><span class="eyebrow">Spread the word</span><h2 class="h2">Posters & videos</h2></div>
+          {d.posters.intro && <p class="lead">{d.posters.intro}</p>}
+        </div>
+        {d.posters.video && <div class="promo" style="margin-bottom:28px"><video controls playsinline preload="metadata" poster={d.posters.videoPoster}><source src={d.posters.video} type="video/mp4"></video></div>}
+        <div class="posters">
+          {d.posters.items.map((p, i) => (
+            <>
+              <div class={`pcard${p.wide ? ' wide' : ''}`}>
+                <a class="img" href={p.image} target="_blank"><img loading="lazy" src={p.image} alt={p.title} style={p.image.includes('banner') ? 'aspect-ratio:12/5' : undefined}></a>
+                <div class="row"><b>{p.title}</b>{p.link ? <a href={p.link}>{p.linkLabel ?? 'Open'}</a> : <a href={p.image} download>Download</a>}</div>
+              </div>
+              {i === 0 && d.posters?.countdownFolder && (
+                <div class="pcard" data-countdown-poster={d.start.slice(0, 10)} data-folder={d.posters.countdownFolder} data-max={d.posters.countdownMax}>
+                  <a class="img" href={`${d.posters.countdownFolder}/${d.posters.countdownMax}.jpg`} target="_blank"><img loading="lazy" src={`${d.posters.countdownFolder}/${d.posters.countdownMax}.jpg`} alt="Countdown poster"></a>
+                  <div class="row"><b data-cd-label>Countdown</b><a href={`${d.posters.countdownFolder}/${d.posters.countdownMax}.jpg`} download>Download</a></div>
+                </div>
+              )}
+            </>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- GALLERY -->
+  {d.gallery && d.gallery.images.length > 0 && (
+    <section>
+      <div class="wrap">
+        <div class="sec-head">
+          <div>{d.gallery.eyebrow && <span class="eyebrow">{d.gallery.eyebrow}</span>}<h2 class="h2">{d.gallery.heading}</h2></div>
+          {d.gallery.intro && <p class="lead">{d.gallery.intro}</p>}
+        </div>
+        <div class="years">{d.gallery.images.map((src) => <img loading="lazy" src={src} alt="">)}</div>
+      </div>
+    </section>
+  )}
+
+  <!-- VENUE -->
+  {d.showVenue && (
+    <section class="venue" id="venue" style={d.gallery ? 'padding-top:0' : undefined}>
+      <div class="wrap">
+        <div>
+          <span class="eyebrow">Venue</span>
+          <h2 class="h2" style="margin-top:14px">See you there.</h2>
+          <address>Global Harvest Church<br>{settings.address}</address>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <a class="btn btn-n" href={mapsUrl} target="_blank" rel="noopener">Get directions</a>
+            <a class="btn btn-y" href={calendar} download {...live}>Add to calendar</a>
+          </div>
+        </div>
+        <div class="map"><iframe title="Map to Global Harvest Church Outer Ring Road" loading="lazy" src={mapsEmbed}></iframe></div>
+      </div>
+    </section>
+  )}
+
+  <Footer
+    newsletter={false}
+    columns={[
+      { heading: 'This event', links: navLinks.filter((l) => l.href.startsWith('#')).concat(d.dp ? [{ label: 'Make your DP', href: 'dp/', hideAfter: overAt }] : []) },
+      { heading: 'Church', links: [{ label: 'Home', href: '/' }, { label: 'All events', href: '/events/' }, { label: 'Sermons', href: '/sermons/' }, { label: 'Watch live', href: settings.youtube }] },
+    ]}
+    legal={`© ${new Date().getFullYear()} ${settings.churchName}. ${settings.slogan}`}
+    tag={d.hashtag ?? ''}
+  />
+</Base>

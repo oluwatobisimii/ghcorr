@@ -1,0 +1,9 @@
+---
+import type { Link } from '../lib/schema';
+interface Props { link: Link; hideAfter?: string }
+const { link, hideAfter } = Astro.props;
+const cls = { yellow: 'btn btn-y', navy: 'btn btn-n', outline: 'btn btn-o' }[link.style];
+const ext = /^https?:/.test(link.url) ? { target: '_blank', rel: 'noopener' } : {};
+const dl = link.url.endsWith('.ics') ? { download: '' } : {};
+---
+<a class={cls} href={link.url} data-hide-after={link.hideAfterEvent ? hideAfter : undefined} {...ext} {...dl}>{link.label}</a>

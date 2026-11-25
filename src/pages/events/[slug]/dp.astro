@@ -1,0 +1,53 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Footer from '../../../components/Footer.astro';
+import TitleLines from '../../../components/TitleLines.astro';
+import Icon from '../../../components/Icon.astro';
+import DpMaker from '../../../components/react/DpMaker';
+import { getEvents, type ChurchEvent } from '../../../lib/content';
+import { settings } from '../../../lib/settings';
+import '../../../styles/dp.css';
+
+export async function getStaticPaths() {
+  const events = (await getEvents()).filter((e) => e.data.page && e.data.dp);
+  return events.map((event) => ({ params: { slug: event.id }, props: { event } }));
+}
+interface Props { event: ChurchEvent }
+const { event } = Astro.props;
+const d = event.data;
+const dp = d.dp!;
+const name = d.title.split(':')[0];
+const tshirt = d.hero?.buttons.find((b) => /^https?:/.test(b.url));
+---
+<Base
+  title={`Make your DP | ${name} · GHC Outer Ring Road`}
+  description={`Make your personalised DP for ${name}. Your photo never leaves your phone.`}
+  image={dp.background}
+  sub
+  showLive={false}
+  navLinks={[
+    { label: 'Home', href: '/' },
+    { label: name, href: '../', highlight: true },
+    ...(d.schedule ? [{ label: 'Schedule', href: '../#schedule' }] : []),
+    ...(d.posters ? [{ label: 'Posters', href: '../#posters' }] : []),
+  ]}
+  navCta={tshirt ? { label: tshirt.label.replace(/^Buy anniversary /, 'Buy '), href: tshirt.url } : undefined}
+>
+  <main class="dp-page">
+    <div class="wrap">
+      <div class="dp-intro">
+        <span class="eyebrow">{d.hero?.tagline ?? name} · {d.when.split('·')[0].trim()}</span>
+        {dp.headingLines.length ? <TitleLines lines={dp.headingLines} /> : <h1>Make your DP</h1>}
+        {dp.intro && <p class="lead">{dp.intro}</p>}
+        <ol class="steps">
+          <li><b>1</b><span><strong>Add your photo</strong>A clear photo of your face works best.</span></li>
+          <li><b>2</b><span><strong>Fit it in the frame</strong>Drag to move. Pinch or use the slider to zoom.</span></li>
+          <li><b>3</b><span><strong>Save & share</strong>Download it or share straight to WhatsApp and Instagram.</span></li>
+        </ol>
+        <p class="privacy"><Icon name="lock" size={20} /><span>Your photo never leaves your phone. The DP is made right here in your browser, and nothing is uploaded or stored.</span></p>
+      </div>
+      <DpMaker client:load background={dp.background} window={dp.window} filename={dp.filename} shareText={dp.shareText} />
+    </div>
+  </main>
+  <Footer minimal legal={`© ${new Date().getFullYear()} ${settings.churchName}. ${settings.slogan}`} tag={d.hashtag ?? ''} />
+</Base>

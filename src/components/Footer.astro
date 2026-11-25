@@ -1,0 +1,76 @@
+---
+import Icon from './Icon.astro';
+import type { NavLink } from '../lib/nav';
+import { settings } from '../lib/settings';
+
+interface Column { heading: string; links?: NavLink[]; text?: string[] }
+interface Props {
+  columns?: Column[];
+  newsletter?: boolean;
+  legal?: string;
+  tag?: string;
+  minimal?: boolean;
+}
+const serviceLines = (() => {
+  const byName = new Map<string, string[]>();
+  for (const s of settings.services) byName.set(s.name, [...(byName.get(s.name) ?? []), s.label]);
+  return [...byName].map(([n, times]) => `${n} · ${times.join(' & ')}`);
+})();
+const {
+  columns = [
+    { heading: 'Service times', text: [...serviceLines, 'Weekday Prayer · 5:30am', `Office · ${settings.officeHours}`] },
+    {
+      heading: 'Explore',
+      links: [
+        { label: 'About us', href: '/#welcome' },
+        { label: 'Plan a visit', href: '/#visit' },
+        { label: 'Ministries', href: '/#ministries' },
+        { label: 'Sermons', href: '/sermons/' },
+        { label: 'Events', href: '/events/' },
+        { label: 'Give', href: '/#give' },
+      ],
+    },
+  ],
+  newsletter = true,
+  legal = `© ${new Date().getFullYear()} ${settings.churchName}. ${settings.slogan}`,
+  tag = 'Privacy · Contact',
+  minimal = false,
+} = Astro.props;
+const lines = settings.address.split(', ');
+---
+<footer>
+  <div class="wrap">
+    {!minimal && (
+      <div class="fgrid">
+        <div class="brand">
+          <img src="/assets/logo-orr-reverse.svg" alt="Global Harvest Church Outer Ring Road" width="193" height="76">
+          <p>Global Harvest Church<br>{lines.slice(0, 2).join(', ')},<br>{lines.slice(2).join(', ')}</p>
+          <p style="margin-top:10px">{settings.phone}<br><a href={`mailto:${settings.email}`}>{settings.email}</a></p>
+          <div class="socials">
+            <a href={settings.instagram} aria-label="Instagram" target="_blank" rel="noopener"><Icon name="instagram" size={18} /></a>
+            <a href={settings.youtube} aria-label="YouTube" target="_blank" rel="noopener"><Icon name="youtube" size={18} /></a>
+            <a href={settings.facebook} aria-label="Facebook" target="_blank" rel="noopener"><Icon name="facebook" size={18} /></a>
+            <a href={settings.telegram} aria-label="Telegram" target="_blank" rel="noopener"><Icon name="telegram" size={18} /></a>
+          </div>
+        </div>
+        {columns.map((c) => (
+          <div>
+            <h5>{c.heading}</h5>
+            <ul>
+              {c.text?.map((t) => <li>{t}</li>)}
+              {c.links?.map((l) => (
+                <li data-hide-after={l.hideAfter}><a href={l.href} {...(/^https?:/.test(l.href) ? { target: '_blank', rel: 'noopener' } : {})}>{l.label}</a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        {newsletter && (
+          <div><h5>Stay in the loop</h5><p>Weekly updates, events and encouragement in your inbox.</p>
+            <form class="news" onsubmit="return false"><input type="email" placeholder="Your email" aria-label="Email address"><button>Join</button></form>
+          </div>
+        )}
+      </div>
+    )}
+    <div class="legal" style={minimal ? 'margin-top:0;border-top:0;padding-top:0' : undefined}><span>{legal}</span><span>{tag}</span></div>
+  </div>
+</footer>

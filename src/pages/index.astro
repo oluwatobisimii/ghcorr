@@ -1,0 +1,231 @@
+---
+import Base from '../layouts/Base.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import { settings, mapsUrl } from '../lib/settings';
+import { getSermons, sermonImage, getProgrammes } from '../lib/content';
+import { shortDate } from '../lib/time';
+
+const sermons = await getSermons();
+const latest = sermons[0];
+const more = sermons.slice(1, 4);
+const programmes = await getProgrammes();
+const sundayTimes = settings.services.filter((s) => s.weekday === 'Sunday').map((s) => s.label.replace(/am$/, ''));
+const midweek = settings.services.find((s) => s.weekday !== 'Sunday');
+const anniv = `/events/${settings.anniversaryEvent}/`;
+---
+<Base title={`Global Harvest Church, Outer Ring Road Ibadan | ${settings.slogan.replace(/\.$/, '')}`}>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <h1>Following Christ.<br><em>Fulfilling Purpose.</em></h1>
+        <p>We're a family of believers on Outer Ring Road, Ibadan, following Jesus together. Whoever you are and wherever you're coming from, there's a seat saved for you.</p>
+        <div class="actions">
+          <a class="btn btn-y" href="#visit">Plan your first visit <Icon name="arrow" /></a>
+          <a class="btn btn-o" href="#message"><Icon name="play" class="arrow" /> Watch a message</a>
+        </div>
+        <div class="times">
+          <div><strong>{sundayTimes.join(' & ')}am</strong>Sunday Celebration</div>
+          {midweek && <div><strong>{midweek.label}</strong>{midweek.name}</div>}
+          <div><strong>5:30am</strong>Weekday Prayer</div>
+        </div>
+      </div>
+      <div class="collage">
+        <div class="frame f1"><img src="/assets/img/hero.jpg" alt=""></div>
+        <div class="frame f2"><img src="/assets/img/joy.jpg" alt=""></div>
+        <div class="frame f3"><img src="/assets/img/praise.jpg" alt=""></div>
+        <a class="sticker" href={anniv} aria-label="15th anniversary"><div><span>15</span><small>Years of<br>grace</small></div></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEXT SERVICE -->
+  <div class="nextbar">
+    <div class="wrap">
+      <div class="lbl"><small>NEXT CELEBRATION SERVICE</small><span id="nextLabel">Sunday, 8:00am</span></div>
+      <div class="count" id="count">
+        <div><span id="cd">0</span><small>DAYS</small></div>
+        <div><span id="ch">0</span><small>HRS</small></div>
+        <div><span id="cm">0</span><small>MINS</small></div>
+      </div>
+      <div class="links">
+        <a href={mapsUrl} target="_blank" rel="noopener">Get directions →</a>
+        <a href={settings.youtube} target="_blank" rel="noopener">Join online →</a>
+      </div>
+    </div>
+  </div>
+  <script type="application/json" id="services-data" set:html={JSON.stringify(settings.services)} />
+
+  <!-- WELCOME -->
+  <section class="welcome" id="welcome">
+    <div class="wrap">
+      <div class="pic">
+        <img src="/assets/img/crowd.jpg" alt="A full auditorium during Sunday service at Global Harvest Church Outer Ring Road">
+        <div class="badge"><strong>You are welcome here.</strong>More than a congregation, we're a family. Come as you are.</div>
+      </div>
+      <div>
+        <span class="eyebrow">Who we are</span>
+        <h2 class="h2">A spiritual family helping you follow Jesus.</h2>
+        <p class="lead">Global Harvest Church Outer Ring Road is a growing, Spirit-filled community in Ibadan. We gather to worship, grow in the Word, pray, and serve our city, helping every person follow Christ and fulfil the purpose God created them for.</p>
+        <div class="facts">
+          <div><strong>2011</strong>Planted in Ibadan</div>
+          <div><strong>2</strong>Sunday services</div>
+          <div><strong>6+</strong>Ministries for every age</div>
+        </div>
+        <a class="btn btn-n" href="#purpose">Our vision & values <Icon name="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISION, MISSION, VALUES -->
+  <section class="purpose" id="purpose">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><span class="eyebrow">Why we exist</span><h2 class="h2">Following Christ, <em>fulfilling purpose.</em></h2></div>
+        <p class="lead">The vision and mission every Global Harvest church shares, and the four values that shape how we live them out in Ibadan.</p>
+      </div>
+      <div class="vm">
+        <article><span class="k">Our vision</span><p>A global movement of Christ’s followers inspired to change their communities.</p></article>
+        <article><span class="k">Our mission</span><p>To raise followers of Christ and equip them to discover and accomplish their God-given purpose.</p></article>
+      </div>
+      <div class="float-head"><span class="k">Our core values</span><b aria-label="FLoAT">F<i>Lo</i>A<i>T</i></b></div>
+      <div class="values">
+        <article class="v1"><span class="l">F</span><h3>Family</h3><p>We do life together. Church is a family where everyone belongs and nobody walks alone.</p></article>
+        <article class="v2"><span class="l">Lo</span><h3>Love</h3><p>God’s love shapes how we treat one another, welcome strangers and serve our city.</p></article>
+        <article class="v3"><span class="l">A</span><h3>Authenticity</h3><p>Real people, real faith. Come as you are; we grow honestly, together.</p></article>
+        <article class="v4"><span class="l">T</span><h3>The Supernatural</h3><p>We expect God to move: in worship, in prayer, in healing and in changed lives.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIRST VISIT -->
+  <section class="visit" id="visit">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><span class="eyebrow">Your first Sunday</span><h2 class="h2">New here? Here's what to expect.</h2></div>
+        <a class="btn btn-n" href={`mailto:${settings.email}?subject=I'm%20visiting%20this%20Sunday`}>Let us know you're coming</a>
+      </div>
+      <div class="steps">
+        <article class="step"><img src="/assets/img/arrive.jpg" alt="Families arriving for Sunday service" loading="lazy"><div class="body"><span class="n">01 · ARRIVE</span><h3>Free parking, friendly faces</h3><p>Our welcome team will meet you at the gate, help with parking and walk you to a seat. Kids check in to Junior Church.</p></div></article>
+        <article class="step"><img src="/assets/img/worship.jpg" alt="Worship during Sunday service" loading="lazy"><div class="body"><span class="n">02 · WORSHIP</span><h3>About two hours, full of life</h3><p>Expect vibrant praise, heartfelt worship, prayer and a practical message from the Bible. Wear whatever you're comfortable in.</p></div></article>
+        <article class="step"><img src="/assets/img/fellow.jpg" alt="Church members fellowshipping" loading="lazy"><div class="body"><span class="n">03 · CONNECT</span><h3>Stay for a chat</h3><p>After service, stop by the First Timers' desk. We'd love to meet you, pray with you and help you find your people.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- MESSAGE (latest sermon from src/content/sermons) -->
+  <section class="message" id="message">
+    <div class="wrap">
+      {latest ? (
+        <a class="player" href={`/sermons/${latest.id}/`}>
+          <img src={sermonImage(latest)} alt={latest.data.title} loading="lazy">
+          <span class="play"><Icon name="play" size={34} /></span>
+          <div class="cap"><span>Latest message · {shortDate(latest.data.date)}{latest.data.passage ? ` · ${latest.data.passage}` : ''}</span><h3>{latest.data.title}</h3></div>
+        </a>
+      ) : (
+        <a class="player" href={settings.youtube}><img src="/assets/img/preach.jpg" alt=""><span class="play"><Icon name="play" size={34} /></span></a>
+      )}
+      <div>
+        <span class="eyebrow" style="color:var(--yellow)">Messages</span>
+        <h2 class="h2">Missed a Sunday? Catch up anywhere.</h2>
+        <p class="lead">Every service streams live on YouTube. Watch, listen and share recent messages.</p>
+        <div class="series">
+          {more.map((s) => (
+            <a href={`/sermons/${s.id}/`}>{s.data.title} <small>{s.data.preacher ?? shortDate(s.data.date)} →</small></a>
+          ))}
+        </div>
+        <a class="btn btn-y" href="/sermons/">All sermons</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASTORS -->
+  <section class="pastors">
+    <div class="wrap">
+      <div class="portrait">
+        <div class="stripes"><i></i><i></i><i></i><i></i></div>
+        <picture><source srcset="/assets/img/resident-pastors.webp" type="image/webp"><img src="/assets/img/resident-pastors.png" alt="Pastors Bimbo and Wole Richards, Resident Pastors" loading="lazy" width="1024" height="979"></picture>
+      </div>
+      <div>
+        <span class="eyebrow">Our Resident Pastors</span>
+        <h2 class="h2" style="margin-top:14px">Meet Pastors Wole & Bimbo Richards</h2>
+        <blockquote>“Our prayer is that every person who walks through our doors follows Christ wholeheartedly and fulfils the purpose God created them for.”</blockquote>
+        <p class="sig">Pastors Wole & Bimbo Richards<small>Resident Pastors, GHC Outer Ring Road</small></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MINISTRIES -->
+  <section class="min" id="ministries">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><span class="eyebrow">Find your people</span><h2 class="h2">There's a place for everyone.</h2></div>
+        <p class="lead">Don't do life alone. Join a community where you can grow in faith, build friendships and make a difference.</p>
+      </div>
+      <div class="grid6">
+        {[
+          ['kid', 'Ages 0–12', 'Junior Church', 'Fun, Bible-based church for kids every Sunday.'],
+          ['teens', 'Ages 13–19', 'Teenage Church', 'Real faith for real teenage life.'],
+          ['fellow', 'Small groups', 'Missional Communities', 'Connect · Grow · Thrive, close to where you live.'],
+          ['baby', 'Marriage', 'Couples Connect', 'Building Christ-centred homes together.'],
+          ['youth', 'Singles', 'Singles & Successful', 'Purpose, friendship and growth for singles.'],
+          ['grad', 'Grow deeper', 'School of Discipleship', 'Equipping believers to follow Jesus fully.'],
+        ].map(([img, tag, title, text]) => (
+          <div class="card"><img src={`/assets/img/${img}.jpg`} alt="" loading="lazy"><div class="body"><span class="tag">{tag}</span><h3>{title}</h3><p>{text}</p></div></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRAMMES (from src/content/events and src/content/weekly) -->
+  <section class="programmes" id="programmes">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><span class="eyebrow">What's on</span><h2 class="h2">Upcoming programmes</h2></div>
+        <div class="prog-nav">
+          <a href="/events/" style="font-weight:600;color:var(--navy);margin-right:8px;align-self:center">All events →</a>
+          <button id="progPrev" aria-label="Previous programme"><Icon name="arrow-left" /></button>
+          <button id="progNext" aria-label="Next programme"><Icon name="arrow" class="" /></button>
+        </div>
+      </div>
+    </div>
+    <div class="prog-stage"><div class="prog-track" id="progTrack"></div></div>
+    <div class="wrap"><div class="prog-chips" id="progChips"></div></div>
+    <script type="application/json" id="programmes-data" set:html={JSON.stringify(programmes)} />
+  </section>
+
+  <!-- LIFE / GALLERY -->
+  <section class="life">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><span class="eyebrow" style="color:var(--yellow)">Life at GHC</span><h2 class="h2">Every Sunday tells a story.</h2></div>
+        <a href={settings.instagram} target="_blank" rel="noopener">Follow @ghcouterringroad →</a>
+      </div>
+    </div>
+    <div class="strip">
+      {['welcome', 'prayer', 'choir', 'stage', 'baby', 'youth'].map((n) => <img src={`/assets/img/${n}.jpg`} alt="" loading="lazy">)}
+    </div>
+  </section>
+
+  <!-- GIVE / CARE -->
+  <section class="duo" id="give">
+    <div class="wrap">
+      <div class="panel give">
+        <span class="eyebrow">Generosity</span>
+        <h3>Give to what God is doing here.</h3>
+        <p>Your tithes and offerings fuel worship, outreach and care across Ibadan. Give securely online in under a minute.</p>
+        <a class="btn btn-n" href={settings.givingUrl || `mailto:${settings.email}?subject=Giving`}>Give online</a>
+        <img class="mark" src="/assets/logomark-colour.svg" alt="">
+      </div>
+      <div class="panel care">
+        <span class="eyebrow">Care & Counselling</span>
+        <h3>Need someone to talk to?</h3>
+        <p>Our counselling team offers confidential, compassionate support, and we'd love to pray with you too.</p>
+        <a class="btn btn-n" href={`mailto:${settings.email}?subject=Prayer%20or%20counselling%20request`}>Request prayer or counselling</a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Base>

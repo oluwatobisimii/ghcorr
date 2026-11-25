@@ -1,0 +1,76 @@
+---
+import '../styles/site.css';
+import Nav from '../components/Nav.astro';
+import type { NavLink, NavCta } from '../lib/nav';
+import { getEntry } from 'astro:content';
+import { settings } from '../lib/settings';
+import { endOf } from '../lib/time';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  /** Sub-pages have a solid nav from the start */
+  sub?: boolean;
+  navLinks?: NavLink[];
+  navCta?: NavCta;
+  mobileExtra?: NavLink[];
+  showLive?: boolean;
+}
+
+// Default nav, with the highlighted event (e.g. the anniversary) until it's over
+const hl = settings.navHighlight;
+const hlEntry = hl ? await getEntry('events', hl.event) : undefined;
+const highlight: NavLink[] = hl && hlEntry
+  ? [{ label: hl.label, href: `/events/${hl.event}/`, highlight: true, hideAfter: endOf(hlEntry.data).toISOString() }]
+  : [];
+const defaultLinks: NavLink[] = [
+  { label: 'About', href: '/#welcome' },
+  { label: 'Sundays', href: '/#visit' },
+  { label: 'Ministries', href: '/#ministries' },
+  { label: 'Sermons', href: '/sermons/' },
+  { label: 'Events', href: '/events/' },
+  ...highlight,
+  { label: 'Give', href: '/#give' },
+];
+
+const {
+  title,
+  description = `${settings.churchName}, Ibadan. Sunday Celebration Services at 8am and 10am, Wednesday service 5:30pm. Plan your visit, watch online and find your people.`,
+  image = '/assets/img/crowd.jpg',
+  sub = false,
+  navLinks = defaultLinks,
+  navCta,
+  mobileExtra,
+  showLive,
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+const now = Date.now();
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <link rel="canonical" href={canonical}>
+  <link rel="icon" href="/assets/logomark-colour.svg" type="image/svg+xml">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:image" content={ogImage}>
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#020233">
+  <link rel="preload" href="/assets/fonts/Poppins-ExtraBold.ttf" as="font" type="font/ttf" crossorigin>
+  <slot name="head" />
+</head>
+<body class={sub ? 'sub' : undefined} data-build={now}>
+  <Nav links={navLinks} cta={navCta} mobileExtra={mobileExtra} showLive={showLive} />
+  <slot />
+  <script>
+    import '../scripts/site';
+  </script>
+</body>
+</html>

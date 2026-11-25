@@ -1,0 +1,91 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Footer from '../../components/Footer.astro';
+import SermonCard from '../../components/SermonCard.astro';
+import Icon from '../../components/Icon.astro';
+import { getSermons, sermonImage, type Sermon } from '../../lib/content';
+import { longDate } from '../../lib/time';
+import { youtubeId } from '../../lib/youtube';
+import { settings } from '../../lib/settings';
+import '../../styles/pages.css';
+
+export async function getStaticPaths() {
+  const sermons = await getSermons();
+  return sermons.map((sermon) => ({ params: { slug: sermon.id }, props: { sermon, all: sermons } }));
+}
+interface Props { sermon: Sermon; all: Sermon[] }
+const { sermon: s, all } = Astro.props;
+const { Content } = await render(s);
+const yt = youtubeId(s.data.youtube);
+const sameSeries = (x: Sermon) =>
+  (!!s.data.series && x.data.series === s.data.series) || (!!s.data.preacher && x.data.preacher === s.data.preacher);
+const others = all.filter((x) => x.id !== s.id);
+const related = [...others.filter(sameSeries), ...others.filter((x) => !sameSeries(x))].slice(0, 3);
+const url = new URL(`/sermons/${s.id}/`, Astro.site).toString();
+const wa = `https://wa.me/?text=${encodeURIComponent(`${s.data.title}${s.data.preacher ? ` · ${s.data.preacher}` : ''}\n${url}`)}`;
+const hasBody = (s.body ?? '').trim().length > 0;
+---
+<Base title={`${s.data.title} | Sermons | GHC Outer Ring Road`} description={s.data.summary ?? `${s.data.title}, a message from Global Harvest Church Outer Ring Road.`} image={sermonImage(s)} sub>
+  <div class="sermon-page">
+    <section class="page-hero">
+      <div class="wrap">
+        <a class="crumb" href="/sermons/">← All sermons</a>
+        <h1>{s.data.title}</h1>
+        <div class="meta">
+          <span><b>{longDate(s.data.date)}</b></span>
+          {s.data.preacher && <span>{s.data.preacher}</span>}
+          {s.data.passage && <span>{s.data.passage}</span>}
+          {s.data.series && <span>Series: {s.data.series}</span>}
+        </div>
+      </div>
+    </section>
+    <section style="padding-top:0">
+      <div class="wrap">
+        {yt ? (
+          <a class="s-video" href={s.data.youtube} data-yt={yt} aria-label={`Play ${s.data.title}`}>
+            <img src={sermonImage(s)} alt="">
+            <span class="play"><Icon name="play" size={38} /></span>
+          </a>
+        ) : (
+          <a class="s-video" href={s.data.audio ?? settings.telegram} target="_blank" rel="noopener">
+            <img src={sermonImage(s)} alt="">
+            <span class="play"><Icon name="play" size={38} /></span>
+            <span class="note">{s.data.audio ? 'Listen to this message' : 'Listen in our Telegram sermon archive'}</span>
+          </a>
+        )}
+        <div class="s-layout">
+          <div class="s-body">
+            {s.data.summary && <p class="lead-in">{s.data.summary}</p>}
+            {hasBody && <Content />}
+          </div>
+          <aside class="s-side">
+            <div class="box">
+              <h4>Details</h4>
+              <dl>
+                <dt>Date</dt><dd>{longDate(s.data.date)}</dd>
+                {s.data.preacher && <><dt>Preacher</dt><dd>{s.data.preacher}</dd></>}
+                {s.data.passage && <><dt>Text</dt><dd>{s.data.passage}</dd></>}
+              </dl>
+            </div>
+            <div class="box">
+              <h4>Share this message</h4>
+              <a class="btn btn-y" href={wa} target="_blank" rel="noopener">Share on WhatsApp</a>
+              <button class="btn btn-n" data-copy={url} style="border:0;font:inherit;font-weight:600;cursor:pointer">Copy link</button>
+              <a class="btn btn-n" href={s.data.audio ?? settings.telegram} target="_blank" rel="noopener">{s.data.audio ? 'Listen to audio' : 'Sermon archive on Telegram'}</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+    {related.length > 0 && (
+      <section style="background:var(--paper)">
+        <div class="wrap">
+          <div class="sec-head"><div><span class="eyebrow">Keep listening</span><h2 class="h2">More messages</h2></div><a class="btn btn-n" href="/sermons/">All sermons</a></div>
+          <div class="s-grid">{related.map((r) => <SermonCard sermon={r} />)}</div>
+        </div>
+      </section>
+    )}
+  </div>
+  <Footer />
+</Base>

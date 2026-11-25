@@ -1,0 +1,90 @@
+/* ---- Shared sub-page hero ---- */
+.page-hero{background:var(--navy-950);color:#fff;padding:150px 0 70px;position:relative;overflow:hidden}
+.page-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(700px 420px at 92% 0%,rgba(41,171,226,.25),transparent 60%),radial-gradient(600px 400px at 0% 110%,rgba(253,74,34,.18),transparent 60%);pointer-events:none}
+.page-hero .wrap{position:relative}
+.page-hero .eyebrow{color:var(--yellow)}
+.page-hero h1{font-size:clamp(42px,5.4vw,76px);line-height:.98;letter-spacing:-.045em;font-weight:800;margin:14px 0 16px;max-width:900px}
+.page-hero p{color:rgba(255,255,255,.75);font-size:18px;max-width:620px}
+.page-hero .meta{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:18px;font-size:15px;color:rgba(255,255,255,.8)}
+.page-hero .meta b{color:#fff;font-weight:600}
+.crumb{font-size:14px;font-weight:600;color:rgba(255,255,255,.7)}
+.crumb:hover{color:#fff}
+
+/* ---- Filters ---- */
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 36px}
+.filters button{font:inherit;font-size:14px;font-weight:600;border:1.5px solid var(--line);background:#fff;color:var(--navy);padding:9px 16px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.filters button:hover{border-color:var(--navy)}
+.filters button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* ---- Sermon cards ---- */
+.s-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.s-card{display:flex;flex-direction:column;gap:14px}
+.s-card .thumb{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:16/9;background:var(--navy-950)}
+.s-card .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.s-card:hover .thumb img{transform:scale(1.04)}
+.s-card .thumb .play{position:absolute;left:16px;bottom:16px;width:46px;height:46px;border-radius:50%;background:var(--yellow);color:var(--navy-950);display:grid;place-items:center}
+.s-card .k{font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange)}
+.s-card h3{font-size:21px;line-height:1.25;letter-spacing:-.02em;color:var(--navy)}
+.s-card p{font-size:14.5px;color:var(--muted)}
+.s-card .by{font-size:14px;font-weight:600;color:var(--ink)}
+.s-feature{display:grid;grid-template-columns:1.3fr 1fr;gap:48px;align-items:center;margin-bottom:64px}
+.s-feature .thumb{aspect-ratio:16/9}
+.s-feature h3{font-size:clamp(28px,3vw,40px)}
+.empty{padding:40px;border-radius:20px;background:var(--paper);color:var(--muted);text-align:center}
+
+/* ---- Sermon page ---- */
+.s-video{position:relative;border-radius:26px;overflow:hidden;aspect-ratio:16/9;background:#000;box-shadow:0 40px 90px -40px rgba(2,2,51,.6);margin-top:-120px;z-index:2;display:block}
+.s-video img{width:100%;height:100%;object-fit:cover;opacity:.9}
+.s-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.s-video .play{position:absolute;inset:0;margin:auto;width:92px;height:92px;border-radius:50%;background:var(--yellow);color:var(--navy-950);display:grid;place-items:center;box-shadow:0 16px 40px rgba(0,0,0,.35);transition:transform .25s}
+.s-video:hover .play{transform:scale(1.08)}
+.s-video .note{position:absolute;left:20px;bottom:18px;color:#fff;font-size:14px;font-weight:600;background:rgba(2,2,51,.65);padding:8px 14px;border-radius:999px}
+.sermon-page .page-hero{padding-bottom:170px}
+.s-layout{display:grid;grid-template-columns:1fr 320px;gap:56px;margin-top:56px;align-items:start}
+.s-body{font-size:17px;line-height:1.75;color:var(--ink)}
+.s-body > * + *{margin-top:18px}
+.s-body h2{font-size:26px;color:var(--navy);letter-spacing:-.02em;line-height:1.2;margin-top:34px}
+.s-body ol,.s-body ul{padding-left:22px}
+.s-body li + li{margin-top:10px}
+.s-body blockquote{border-left:4px solid var(--yellow);padding:6px 0 6px 20px;font-size:20px;font-weight:600;color:var(--navy)}
+.s-body .lead-in{font-size:21px;line-height:1.5;color:var(--navy);font-weight:600}
+.s-side{position:sticky;top:110px;display:flex;flex-direction:column;gap:14px}
+.s-side .box{border:1.5px solid var(--line);border-radius:20px;padding:22px}
+.s-side .box h4{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.s-side .box .btn{width:100%;justify-content:center;margin-top:8px}
+.s-side dl{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:15px}
+.s-side dt{color:var(--muted)}.s-side dd{font-weight:600;color:var(--ink)}
+
+/* ---- Events ---- */
+.e-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
+.e-card{display:flex;flex-direction:column;border-radius:24px;overflow:hidden;background:#fff;border:1.5px solid var(--line);transition:transform .3s,box-shadow .3s}
+a.e-card:hover{transform:translateY(-4px);box-shadow:0 30px 60px -36px rgba(5,5,117,.45)}
+.e-card .bn{aspect-ratio:12/5;background:linear-gradient(135deg,var(--navy),var(--navy-950));position:relative;overflow:hidden}
+.e-card .bn img{width:100%;height:100%;object-fit:cover}
+.e-card .bn .txt{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;color:#fff}
+.e-card .bn .txt b{font-size:26px;line-height:1.1;letter-spacing:-.02em}
+.e-card .body{padding:22px 24px 26px;display:flex;flex-direction:column;gap:6px}
+.e-card .k{font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange)}
+.e-card h3{font-size:22px;line-height:1.2;letter-spacing:-.02em;color:var(--navy)}
+.e-card p{font-size:14.5px;color:var(--muted)}
+.e-card .badge{position:absolute;top:14px;left:14px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 11px;border-radius:999px;background:var(--yellow);color:var(--navy-950)}
+.past .e-grid{grid-template-columns:repeat(3,1fr)}
+.past .e-card .bn img{filter:saturate(.75)}
+
+/* ---- Event recap ---- */
+.recap{background:var(--paper)}
+.recap .s-video{margin-top:0}
+
+@media (max-width:1024px){
+  .s-grid,.past .e-grid{grid-template-columns:1fr 1fr}
+  .s-feature,.s-layout{grid-template-columns:1fr}
+  .s-side{position:static}
+}
+@media (max-width:640px){
+  .page-hero{padding:118px 0 56px}
+  .sermon-page .page-hero{padding-bottom:120px}
+  .s-video{margin-top:-90px;border-radius:18px}
+  .s-video .play{width:70px;height:70px}
+  .s-grid,.e-grid,.past .e-grid{grid-template-columns:1fr}
+  .s-feature{margin-bottom:44px;gap:22px}
+}

@@ -1,0 +1,282 @@
+# Pages CMS configuration (https://pagescms.org)
+# This is what church editors see when they log in. Each block below becomes a
+# section in the dashboard. Field names must match src/content.config.ts.
+
+media:
+  input: public/media
+  output: /media
+
+content:
+  # ------------------------------------------------------------------ SERMONS
+  - name: sermons
+    label: Sermons
+    type: collection
+    path: src/content/sermons
+    filename: "{year}-{month}-{day}-{primary}.md"
+    view:
+      fields: [title, date, preacher]
+      primary: title
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name: date, label: Date preached, type: date, required: true }
+      - { name: preacher, label: Preacher, type: string, description: "e.g. Pastor Abimbola Richards" }
+      - { name: series, label: Series, type: string, description: "Leave blank if it's not part of a series. Use the exact same spelling for every message in a series." }
+      - { name: passage, label: Bible passage, type: string, description: "e.g. Daniel 6:26" }
+      - { name: summary, label: Big idea, type: text, description: "One or two sentences. Shown on the card and at the top of the page." }
+      - { name: youtube, label: YouTube link, type: string, description: "Paste the full YouTube link. The thumbnail and player are added automatically." }
+      - { name: audio, label: Audio link, type: string, description: "Optional: Telegram post or mp3 link" }
+      - { name: image, label: Photo, type: image, description: "Only needed if there's no YouTube link yet" }
+      - { name: draft, label: Hide from website (draft), type: boolean, default: false }
+      - { name: body, label: Sermon notes, type: rich-text, description: "Optional key points, scriptures and quotes" }
+
+  # ------------------------------------------------------------------ EVENTS
+  - name: events
+    label: Events & programmes
+    type: collection
+    path: src/content/events
+    filename: "{year}-{primary}.md"
+    view:
+      fields: [title, start, when]
+      primary: title
+      sort: [start, title]
+      default:
+        sort: start
+        order: desc
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - name: start
+        label: Starts
+        type: date
+        required: true
+        description: "Lagos time"
+        options: { time: true, format: "yyyy-MM-dd'T'HH:mm" }
+      - name: end
+        label: Ends
+        type: date
+        description: "When it's over. It moves to Past events after this. Leave blank for one-day events."
+        options: { time: true, format: "yyyy-MM-dd'T'HH:mm" }
+      - { name: when, label: Date text people see, type: string, required: true, description: "e.g. Sun 6 Dec · 10:00am" }
+      - { name: venue, label: Venue / details line, type: string }
+      - { name: summary, label: Short description, type: text, description: "Used when the link is shared on WhatsApp and Facebook" }
+      - { name: banner, label: Banner (2400 × 1000), type: image }
+      - { name: featured, label: Pin as first slide on the homepage, type: boolean, default: false }
+      - { name: showInSlider, label: Show in homepage slider, type: boolean, default: true }
+      - { name: cta, label: Button text, type: string, description: "e.g. Register now" }
+      - { name: link, label: Button link, type: string, description: "Optional. Leave blank to use the event's own page." }
+      - { name: page, label: Give this event its own page, type: boolean, default: false, description: "Turn on for big events. Fill in the sections below." }
+      - { name: draft, label: Hide from website (draft), type: boolean, default: false }
+      - { name: hashtag, label: Hashtag, type: string }
+      - { name: shareImage, label: Share image (for WhatsApp previews), type: image }
+
+      - name: hero
+        label: "Page: top section"
+        type: object
+        fields:
+          - { name: tagline, label: Small text above the title, type: string }
+          - name: titleLines
+            label: Big title lines
+            type: object
+            list: true
+            fields:
+              - { name: text, label: Text, type: string }
+              - { name: style, label: Colour, type: select, options: { values: [plain, orange, blue] } }
+          - { name: details, label: Details under the date, type: string }
+          - { name: video, label: Looping video (mp4), type: file }
+          - { name: image, label: Image (or video poster), type: image }
+          - { name: countdown, label: Show countdown, type: boolean, default: true }
+          - name: buttons
+            label: Buttons
+            type: object
+            list: true
+            fields:
+              - { name: label, label: Text, type: string }
+              - { name: url, label: Link, type: string }
+              - { name: style, label: Style, type: select, options: { values: [yellow, navy, outline] } }
+              - { name: hideAfterEvent, label: Hide after the event, type: boolean }
+
+      - name: quote
+        label: "Page: the word (quote)"
+        type: object
+        fields:
+          - { name: eyebrow, label: Small heading, type: string }
+          - { name: text, label: Quote, type: text, description: "Wrap words in *stars* to highlight them in orange" }
+          - { name: cite, label: Source, type: string }
+
+      - name: schedule
+        label: "Page: schedule"
+        type: object
+        fields:
+          - { name: heading, label: Heading, type: string }
+          - { name: intro, label: Intro, type: text }
+          - name: items
+            label: Days
+            type: object
+            list: true
+            fields:
+              - { name: day, label: Day number, type: string, description: "e.g. 06" }
+              - { name: label, label: Weekday · month, type: string, description: "e.g. Sun · Dec" }
+              - { name: title, label: Title, type: string }
+              - { name: text, label: Text, type: text }
+              - { name: bullets, label: Bullet points, type: string, list: true }
+              - { name: highlight, label: Highlight (navy card), type: boolean }
+              - { name: pill, label: Badge text, type: string, description: "e.g. Grand finale" }
+
+      - name: ministers
+        label: "Page: ministers"
+        type: object
+        list: true
+        fields:
+          - { name: name, label: Name, type: string }
+          - { name: role, label: Role, type: string }
+          - { name: photo, label: Photo, type: image }
+          - { name: photoPosition, label: Photo focus, type: string, description: "Optional, e.g. 30% 20%" }
+          - { name: text, label: Bio, type: text }
+
+      - name: involve
+        label: "Page: get involved cards (hidden after the event)"
+        type: object
+        list: true
+        fields:
+          - { name: kind, label: Colour, type: select, options: { values: [yellow, gradient, navy, light] } }
+          - { name: eyebrow, label: Small heading, type: string }
+          - { name: title, label: Title, type: string }
+          - { name: text, label: Text, type: text }
+          - { name: image, label: Image, type: image }
+          - name: account
+            label: Bank account
+            type: object
+            fields:
+              - { name: number, label: Account number, type: string }
+              - { name: bank, label: Bank, type: string }
+          - name: buttons
+            label: Buttons
+            type: object
+            list: true
+            fields:
+              - { name: label, label: Text, type: string }
+              - { name: url, label: Link, type: string }
+              - { name: style, label: Style, type: select, options: { values: [yellow, navy, outline] } }
+
+      - name: posters
+        label: "Page: posters & videos"
+        type: object
+        fields:
+          - { name: intro, label: Intro, type: text }
+          - { name: video, label: Promo video (mp4), type: file }
+          - { name: videoPoster, label: Video cover image, type: image }
+          - { name: countdownFolder, label: Countdown posters folder, type: string, description: "Folder with 1.jpg … 13.jpg and today.jpg, e.g. /media/events/2026-opened-flood-gates/countdown" }
+          - { name: countdownMax, label: Highest countdown number, type: number }
+          - name: items
+            label: Posters
+            type: object
+            list: true
+            fields:
+              - { name: title, label: Title, type: string }
+              - { name: image, label: Image, type: image }
+              - { name: wide, label: Landscape, type: boolean }
+              - { name: link, label: Link instead of download, type: string }
+              - { name: linkLabel, label: Link text, type: string }
+
+      - name: gallery
+        label: "Page: photo strip"
+        type: object
+        fields:
+          - { name: eyebrow, label: Small heading, type: string }
+          - { name: heading, label: Heading, type: string }
+          - { name: intro, label: Intro, type: text }
+          - { name: images, label: Photos, type: image, options: { multiple: true } }
+
+      - { name: showVenue, label: "Page: show venue & map", type: boolean, default: true }
+
+      - name: recap
+        label: "Page: recap (appears automatically after the event)"
+        type: object
+        fields:
+          - { name: heading, label: Heading, type: string }
+          - { name: text, label: Text, type: text }
+          - { name: youtube, label: Service video (YouTube link), type: string }
+          - { name: images, label: Photos, type: image, options: { multiple: true } }
+
+      - name: dp
+        label: "DP maker"
+        type: object
+        description: "Leave empty if this event has no DP. The design must be 1080 × 1350."
+        fields:
+          - { name: background, label: DP design (1080 × 1350), type: image }
+          - name: window
+            label: Photo window position (pixels on the design)
+            type: object
+            fields:
+              - { name: x, type: number }
+              - { name: y, type: number }
+              - { name: w, label: width, type: number }
+              - { name: h, label: height, type: number }
+              - { name: r, label: corner radius, type: number }
+          - { name: filename, label: Download file name, type: string }
+          - { name: shareText, label: Share message, type: text }
+          - name: headingLines
+            label: Page heading lines
+            type: object
+            list: true
+            fields:
+              - { name: text, type: string }
+              - { name: style, type: select, options: { values: [plain, orange, blue] } }
+          - { name: intro, label: Intro, type: text }
+
+  # ------------------------------------------------------------------ WEEKLY
+  - name: weekly
+    label: Weekly programmes
+    type: collection
+    path: src/content/weekly
+    view:
+      fields: [title, when]
+      primary: title
+      sort: [order]
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name: when, label: When, type: string, required: true, description: "e.g. Every Sunday · 8:00am & 10:00am" }
+      - { name: venue, label: Venue, type: string, required: true }
+      - { name: banner, label: Banner (2400 × 1000), type: image }
+      - { name: link, label: Button link, type: string }
+      - { name: cta, label: Button text, type: string }
+      - { name: order, label: Order in slider, type: number }
+
+  # ------------------------------------------------------------------ SETTINGS
+  - name: settings
+    label: Site settings
+    type: file
+    path: src/data/settings.json
+    format: json
+    fields:
+      - { name: churchName, label: Church name, type: string }
+      - { name: slogan, label: Slogan, type: string }
+      - { name: address, label: Address, type: string }
+      - { name: mapQuery, label: Google Maps search text, type: string }
+      - { name: phone, label: Phone, type: string }
+      - { name: email, label: Email, type: string }
+      - { name: youtube, label: YouTube, type: string }
+      - { name: instagram, label: Instagram, type: string }
+      - { name: facebook, label: Facebook, type: string }
+      - { name: telegram, label: Telegram, type: string }
+      - { name: givingUrl, label: Online giving link, type: string }
+      - { name: officeHours, label: Office hours, type: string }
+      - name: services
+        label: Service times (used for the "next service" countdown)
+        type: object
+        list: true
+        fields:
+          - { name: name, label: Service, type: string }
+          - { name: weekday, label: Day, type: select, options: { values: [Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday] } }
+          - { name: time, label: Time (24h, e.g. 17:30), type: string }
+          - { name: label, label: Time as shown, type: string, description: "e.g. 5:30pm" }
+      - { name: anniversaryEvent, label: "Event that /anniversary points to (file name)", type: string }
+      - name: navHighlight
+        label: Highlighted menu item (disappears after that event)
+        type: object
+        fields:
+          - { name: label, label: Menu text, type: string }
+          - { name: event, label: Event file name, type: string }

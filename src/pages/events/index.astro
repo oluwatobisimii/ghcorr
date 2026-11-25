@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import Footer from '../../components/Footer.astro';
+import EventCard from '../../components/EventCard.astro';
+import { getEvents, splitEvents } from '../../lib/content';
+import { endOf } from '../../lib/time';
+import '../../styles/pages.css';
+
+// Built nightly; each card also hides itself in the browser the moment its event ends.
+const { upcoming, past } = splitEvents(await getEvents());
+---
+<Base title="Events | Global Harvest Church Outer Ring Road" description="Upcoming programmes and past events at Global Harvest Church Outer Ring Road, Ibadan." sub>
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="eyebrow">Events</span>
+      <h1>What's happening at GHC.</h1>
+      <p>Special services, outreaches and gatherings. Weekly services are on the <a href="/#programmes" style="color:#fff;text-decoration:underline">homepage</a>.</p>
+    </div>
+  </section>
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><div><span class="eyebrow">Coming up</span><h2 class="h2">Upcoming</h2></div></div>
+      {upcoming.length ? (
+        <div class="e-grid">
+          {upcoming.map((e) => <div data-hide-after={endOf(e.data).toISOString()}><EventCard event={e} /></div>)}
+        </div>
+      ) : <p class="empty">Nothing scheduled right now. Check back soon.</p>}
+    </div>
+  </section>
+  {past.length > 0 && (
+    <section class="past" style="background:var(--paper)">
+      <div class="wrap">
+        <div class="sec-head"><div><span class="eyebrow">Archive</span><h2 class="h2">Past events</h2></div></div>
+        <div class="e-grid">{past.map((e) => <EventCard event={e} past />)}</div>
+      </div>
+    </section>
+  )}
+  <Footer />
+</Base>

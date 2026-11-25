@@ -1,0 +1,21 @@
+---
+import Icon from './Icon.astro';
+import { sermonImage, type Sermon } from '../lib/content';
+import { shortDate } from '../lib/time';
+interface Props { sermon: Sermon; feature?: boolean }
+const { sermon: s, feature = false } = Astro.props;
+const tags = [s.data.series, s.data.preacher].filter(Boolean).join('|');
+---
+<a class={`s-card${feature ? ' s-feature' : ''}`} href={`/sermons/${s.id}/`} data-tags={tags}>
+  <div class="thumb">
+    <img src={sermonImage(s)} alt="" loading="lazy">
+    <span class="play"><Icon name="play" size={22} /></span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span class="k">{shortDate(s.data.date)}{s.data.series ? ` · ${s.data.series}` : ''}</span>
+    <h3>{s.data.title}</h3>
+    {s.data.preacher && <span class="by">{s.data.preacher}</span>}
+    {feature && s.data.summary && <p>{s.data.summary}</p>}
+    {!feature && s.data.passage && <p>{s.data.passage}</p>}
+  </div>
+</a>

@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import Footer from '../../components/Footer.astro';
+import SermonCard from '../../components/SermonCard.astro';
+import { getSermons } from '../../lib/content';
+import { settings } from '../../lib/settings';
+import '../../styles/pages.css';
+
+const sermons = await getSermons();
+const [first, ...rest] = sermons;
+const series = [...new Set(sermons.map((s) => s.data.series).filter((x): x is string => !!x))];
+const preachers = [...new Set(sermons.map((s) => s.data.preacher).filter((x): x is string => !!x))];
+---
+<Base title="Sermons | Global Harvest Church Outer Ring Road" description="Watch and listen to recent messages from Global Harvest Church Outer Ring Road, Ibadan." sub>
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="eyebrow">Sermons</span>
+      <h1>Missed a Sunday? Catch up here.</h1>
+      <p>Recent messages from GHC Outer Ring Road. Every service also streams live on YouTube, and audio goes up on Telegram.</p>
+      <div class="meta"><a class="btn btn-y" href={settings.youtube} target="_blank" rel="noopener">YouTube channel</a><a class="btn btn-o" href={settings.telegram} target="_blank" rel="noopener">Sermon archive on Telegram</a></div>
+    </div>
+  </section>
+  <section>
+    <div class="wrap">
+      {first ? <SermonCard sermon={first} feature /> : <p class="empty">No sermons yet. Add one in /admin.</p>}
+      {(series.length > 0 || preachers.length > 1) && (
+        <div class="filters" data-filters>
+          <button class="on" data-f="">All messages</button>
+          {series.map((s) => <button data-f={s}>{s}</button>)}
+          {preachers.map((p) => <button data-f={p}>{p}</button>)}
+        </div>
+      )}
+      <div class="s-grid">
+        {rest.map((s) => <SermonCard sermon={s} />)}
+      </div>
+    </div>
+  </section>
+  <Footer />
+</Base>

@@ -1,0 +1,21 @@
+{
+  "churchName": "Global Harvest Church, Outer Ring Road",
+  "slogan": "Following Christ, Fulfilling Purpose.",
+  "address": "Outer Ring Road, beside Richbam filling station, New Garage, Apata Expressway, Ibadan",
+  "mapQuery": "Global Harvest Church Outer Ring Road Richbam New Garage Ibadan",
+  "phone": "0915 275 5058",
+  "email": "ghcouterringroad@gmail.com",
+  "youtube": "https://www.youtube.com/@ghcouterringroad",
+  "instagram": "https://instagram.com/ghcouterringroad",
+  "facebook": "https://facebook.com/ghcouterringroad",
+  "telegram": "https://t.me/ghcouterringroad",
+  "givingUrl": "",
+  "officeHours": "Tue–Fri, 9am–4pm",
+  "services": [
+    { "name": "Sunday Celebration", "weekday": "Sunday", "time": "08:00", "label": "8:00am" },
+    { "name": "Sunday Celebration", "weekday": "Sunday", "time": "10:00", "label": "10:00am" },
+    { "name": "Wednesday Service", "weekday": "Wednesday", "time": "17:30", "label": "5:30pm" }
+  ],
+  "anniversaryEvent": "2026-opened-flood-gates",
+  "navHighlight": { "label": "15th Anniversary", "event": "2026-opened-flood-gates" }
+}

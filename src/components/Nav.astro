@@ -1,0 +1,41 @@
+---
+import Icon from './Icon.astro';
+import type { NavLink, NavCta } from '../lib/nav';
+import { settings } from '../lib/settings';
+
+interface Props {
+  links: NavLink[];
+  cta?: NavCta;
+  /** Extra links that only appear in the phone menu */
+  mobileExtra?: NavLink[];
+  showLive?: boolean;
+}
+const { links, cta = { label: 'Plan your visit', href: '/#visit' }, mobileExtra = [], showLive = true } = Astro.props;
+const ext = (l: { external?: boolean; href: string }) =>
+  l.external || /^https?:/.test(l.href) ? { target: '_blank', rel: 'noopener' } : {};
+---
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="Global Harvest Church Outer Ring Road home">
+      <img class="light" src="/assets/logo-orr-reverse.svg" alt="Global Harvest Outer Ring Road" width="147" height="58">
+      <img class="dark" src="/assets/logo-orr-colour.svg" alt="Global Harvest Outer Ring Road" width="147" height="58">
+    </a>
+    <ul>
+      {links.map((l) => (
+        <li data-hide-after={l.hideAfter}><a class={l.highlight ? 'anniv' : undefined} href={l.href} {...ext(l)}>{l.label}</a></li>
+      ))}
+    </ul>
+    <div class="cta">
+      {showLive && <a class="live" href={settings.youtube} target="_blank" rel="noopener"><b></b>Watch live</a>}
+      <a class="btn btn-y" href={cta.href} data-hide-after={cta.hideAfter} {...ext(cta)}>{cta.label}</a>
+      <button class="burger" aria-label="Open menu"><Icon name="menu" size={26} /></button>
+    </div>
+  </div>
+</header>
+<nav class="mobile-menu" id="mobileMenu" aria-label="Menu">
+  <button class="close" aria-label="Close menu"><Icon name="close" size={26} /></button>
+  {[...links.filter((l) => l.highlight), ...links.filter((l) => !l.highlight), ...mobileExtra].map((l) => (
+    <a class={l.highlight ? 'anniv' : undefined} href={l.href} data-hide-after={l.hideAfter} {...ext(l)}>{l.label}</a>
+  ))}
+  {showLive && <a href={settings.youtube} target="_blank" rel="noopener">Watch live</a>}
+</nav>
