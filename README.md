@@ -1,6 +1,6 @@
 # GHC Outer Ring Road website
 
-Astro 7 + TypeScript static site with React for interactive pieces. Content is edited through Pages CMS (`/.pages.yml`), stored as Markdown/JSON in this repo, and deployed as static files (Netlify config included).
+Astro 7 + TypeScript static site with React for interactive pieces. Content is edited through Pages CMS (`/.pages.yml`), stored as Markdown/JSON in this repo, and deployed as static files on Cloudflare Pages (`public/_headers`, `.node-version`).
 
 ## Run it
 
@@ -37,7 +37,7 @@ npm run build      # type-checks, then builds to dist/
 ## Going live checklist
 
 1. Put this folder in a GitHub repo, ideally under a church organisation.
-2. Connect it to Netlify (or Cloudflare Pages). The build command and output folder are already set in `netlify.toml`.
-3. Create a Netlify build hook and save it as the `BUILD_HOOK_URL` secret on GitHub.
+2. Cloudflare Pages: Workers & Pages → Create → Pages → Connect to Git → pick the repo. Framework preset **Astro**, build command `npm run build`, output directory `dist`.
+3. Create a Pages deploy hook (Settings → Builds → Deploy hooks) and save it as the `BUILD_HOOK_URL` secret on GitHub.
 4. Sign in to https://app.pagescms.org with GitHub, open the repo, and invite editors by email.
-5. Point ghcouterringroad.org at Netlify once everything has been checked.
+5. Add ghcouterringroad.org under the project's Custom domains once everything has been checked.
