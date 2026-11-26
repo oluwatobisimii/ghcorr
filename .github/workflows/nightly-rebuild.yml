@@ -1,7 +1,7 @@
 # Rebuilds the live site every night at 00:05 Lagos time, so finished events
 # move to "Past events" and anniversary-style pages switch to recap mode
 # even if nobody edits anything. Needs a repository secret BUILD_HOOK_URL
-# (Cloudflare: Workers & Pages → your project → Settings → Builds → Deploy hooks).
+# (Vercel: Project → Settings → Git → Deploy Hooks, branch main).
 name: Nightly rebuild
 on:
   schedule:
